@@ -41,6 +41,7 @@ last_shot = pygame.time.get_ticks()
 now = 0
 score = 0
 player = Player(WIDTH / 2, HEIGHT - 50)
+get_weapon=False
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,enemies,all):
@@ -154,15 +155,14 @@ def check_enemy_hit_player():
 weapon=False
 weapon_time=0
 def check_player_hit_supports():
-    global running, supports,score,weapon,weapon_time
+    global running, supports,score,weapon,weapon_time,get_weapon
     hits = pygame.sprite.spritecollide(player,supports, False,pygame.sprite.collide_circle_ratio(0.7))
     if hits:
         for hit in hits:
             hit.kill()
             if hit.type==0:
-                weapon=True
+                get_weapon=True
                 weapon_time=pygame.time.get_ticks()
-                Bullet.speedy=100
             elif hit.type==1:
                 player.shield+=25
                 if player.shield>100:
@@ -275,6 +275,16 @@ while running:
         gamestate=begin_state.updatestate()
     elif gamestate=="start":
         keystate = pygame.key.get_pressed()
+        now_z=pygame.time.get_ticks()
+        if keystate[pygame.K_z]:
+            if get_weapon==True:
+                if weapon==True:
+                    weapon=False
+                    Bullet.speedy=10
+                else:
+                    weapon=True
+                    Bullet.speedy=100
+        keystate = pygame.key.get_pressed()
         if keystate[pygame.K_SPACE]:
             now=pygame.time.get_ticks()
             if now-last_shot>SHOT_DELAY:
@@ -287,6 +297,7 @@ while running:
                         last_shot=now
                     else:
                         weapon=False
+                        get_weapon=False
                         Bullet.speedy=10
         if live<=0:
             player.shield=100
