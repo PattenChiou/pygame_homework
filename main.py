@@ -34,6 +34,7 @@ enemies = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 bullets_enemies = pygame.sprite.Group()
+bullets_boss = pygame.sprite.Group()
 supports=pygame.sprite.Group()
 
 last_shot = pygame.time.get_ticks()
@@ -85,7 +86,38 @@ class Enemy(pygame.sprite.Sprite):
         e = Enemy(self.group,self.all_sprites)
         self.group.add(e)
         self.all_sprites.add(e)
+class Boss(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        image = pygame.image.load(path.join(img_dir, "ship.png"))
+        self.image = pygame.transform.scale(image, (100, 60))
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.centery = y
+        self.speedy=1
+        self.last_shot=pygame.time.get_ticks()
+        self.angle=0
+        #self.now=pygame.time.get_ticks()
+        old_center=self.rect.center
+        self.image_origin=self.image
+        self.rot_angle=180
+        self.angle=self.angle+self.rot_angle
+        self.image=pygame.transform.rotate(self.image_origin,self.angle)
+        self.rect=self.image.get_rect()
+        self.rect.center=old_center
 
+    def update(self):
+        self.rect.y += self.speedy
+        self.now=pygame.time.get_ticks()
+        if self.now-self.last_shot>SHOT_DELAY:
+            self.shoot_boss()
+            self.last_shot=self.now
+
+    def shoot_boss(self):
+        sound_pew.play()
+        bullet = Bullet_boss(self.rect.centerx,self.rect.centery)
+        bullets_boss.add(bullet)
+        all_sprites.add(bullet)
 
 def newMeteor():
     global all_sprites
@@ -228,6 +260,15 @@ def check_bullets_hit_player():
             player.shield-= 5
             
             # print("check_bullets_hit_meteor")
+def check_bullets_boss_hit_player():
+    global  score
+    hits = pygame.sprite.spritecollide(player,bullets_boss,False,pygame.sprite.collide_circle_ratio(1))
+    if hits:
+        for hit in hits:
+            hit.kill()
+            player.shield-= 5
+            
+            # print("check_bullets_hit_meteor")
 def draw_score():
     font = pygame.font.Font(font_name, 14)
     text_surface = font.render(str(score), True, YELLOW)
@@ -260,6 +301,7 @@ def show_begin_screen():
     show_text("Arrow keys move. Space to Fire",230,300,30)
     show_text("Press Space to begin.",320,400,20)
 begin_state=Begin_state(screen)
+show_boss=False
 while running:
     # clocks control how fast the loop will execute
     clock.tick(FPS)
@@ -272,6 +314,7 @@ while running:
         begin_state.keyhandle()
         if begin_state.keyhandle()==True:
             score=0
+            show_boss=False
         gamestate=begin_state.updatestate()
     elif gamestate=="start":
         keystate = pygame.key.get_pressed()
@@ -303,10 +346,14 @@ while running:
             player.shield=100
             live=3
             gamestate="begin"
+            boss.kill()
             begin_state.reset()
             
 
-
+        if score>100 and show_boss==False:
+            boss=Boss(WIDTH/2,200)
+            all_sprites.add(boss)
+            show_boss=True
         # update the state of sprites
         check_meteor_hit_player()
         #
@@ -315,6 +362,7 @@ while running:
         check_enemy_hit_player()
         check_bullets_hit_enemy()
         check_bullets_hit_player()
+        check_bullets_boss_hit_player()
 
         all_sprites.update()
 

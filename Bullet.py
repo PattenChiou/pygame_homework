@@ -32,3 +32,21 @@ class Bullet_enemy(pygame.sprite.Sprite):
         self.rect.y += self.speedy
         if self.rect.bottom > HEIGHT:
             self.kill()
+class Bullet_boss(pygame.sprite.Sprite):
+    speedy=10
+    def __init__(self, posx, posy):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.image.load(path.join(img_dir, "laser_gun.png"))
+        self.rect = self.image.get_rect()
+        self.rect.centerx = posx
+        self.rect.centery = posy
+        self.image_origin=self.image
+        self.rot_angle=5
+        self.angle=0
+        #self.speedy = 10
+
+    def update(self):
+        self.rect.y += self.speedy
+        if self.rect.bottom > HEIGHT:
+            self.kill()
