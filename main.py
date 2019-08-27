@@ -271,7 +271,7 @@ def check_bullets_boss_hit_player():
     if hits:
         for hit in hits:
             hit.kill()
-            player.shield-= 100
+            player.shield-= 10
             
             # print("check_bullets_hit_meteor")
 def draw_score():
