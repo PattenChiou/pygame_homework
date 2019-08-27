@@ -89,8 +89,8 @@ class Enemy(pygame.sprite.Sprite):
 class Boss(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        image = pygame.image.load(path.join(img_dir, "enemyBlue1.png"))
-        self.image = pygame.transform.scale(image, (200, 120))
+        image = pygame.image.load(path.join(img_dir, "ship.png"))
+        self.image = pygame.transform.scale(image, (100, 60))
         self.rect = self.image.get_rect()
         self.rect.centerx = x
         self.rect.centery = y
@@ -115,15 +115,10 @@ class Boss(pygame.sprite.Sprite):
 
     def shoot_boss(self):
         sound_pew.play()
-        bullet = Bullet_boss2(self.rect.centerx,self.rect.centery)
-        bullet2 = Bullet_boss(self.rect.centerx+60,self.rect.centery)
-        bullet3 = Bullet_boss(self.rect.centerx-60,self.rect.centery)
+        bullet = Bullet_boss(self.rect.centerx,self.rect.centery)
         bullets_boss.add(bullet)
-        bullets_boss.add(bullet2)
-        bullets_boss.add(bullet3)
         all_sprites.add(bullet)
-        all_sprites.add(bullet2)
-        all_sprites.add(bullet3)
+
 def newMeteor():
     global all_sprites
     m = Meteor(meteors,all_sprites)
@@ -271,7 +266,7 @@ def check_bullets_boss_hit_player():
     if hits:
         for hit in hits:
             hit.kill()
-            player.shield-= 10
+            player.shield-= 5
             
             # print("check_bullets_hit_meteor")
 def draw_score():
@@ -355,15 +350,10 @@ while running:
             begin_state.reset()
             
 
-        if score>500 and show_boss==False:
-            boss=Boss(WIDTH/2,0)
+        if score>100 and show_boss==False:
+            boss=Boss(WIDTH/2,200)
             all_sprites.add(boss)
             show_boss=True
-        if score>400:
-            bg=pygame.image.load(path.join(img_dir,'star_wars2.jpg'))
-
-        elif score>200:
-            bg=pygame.image.load(path.join(img_dir,'star_wars1.jpg'))
         # update the state of sprites
         check_meteor_hit_player()
         #
