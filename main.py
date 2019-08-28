@@ -310,6 +310,7 @@ def shoot2():
     bullets.add(bullet)
     all_sprites.add(bullet)
     bullet2 = Bullet(player.rect.centerx+10, player.rect.centery)
+    bullets.add(bullet2)
     all_sprites.add(bullet2)
 
 gamestate="begin"
@@ -372,20 +373,21 @@ while running:
             begin_state.reset()
             
 
-        if score>100 and show_boss==False:
+        if score>500 and show_boss==False:
             #boss=Boss(WIDTH/2,0)
             all_sprites.add(boss)
             #draw_shield_boss()
             show_boss=True
             boss_alive=True
-        if score>400:
-            bg=pygame.image.load(path.join(img_dir,'star_wars2.jpg'))
+        
         if boss.shield<=0:
             boss.kill()
             boss_alive=False
         if boss.rect.y>HEIGHT:
             boss.kill()
             boss_alive=False
+        if score>400:
+            bg=pygame.image.load(path.join(img_dir,'star_wars2.jpg'))
         elif score>200:
             bg=pygame.image.load(path.join(img_dir,'star_wars1.jpg'))
         # update the state of sprites

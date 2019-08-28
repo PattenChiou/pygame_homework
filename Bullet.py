@@ -39,7 +39,7 @@ class Bullet_boss(pygame.sprite.Sprite):
     def __init__(self, posx, posy):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load(path.join(img_dir, "laser_gun.png"))
+        self.image = pygame.image.load(path.join(img_dir, "laserBlue07.png"))
         self.rect = self.image.get_rect()
         self.rect.centerx = posx
         self.rect.centery = posy
@@ -56,7 +56,7 @@ class Bullet_boss2(pygame.sprite.Sprite):
     def __init__(self, posx, posy):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load(path.join(img_dir, "laser_gun.png"))
+        self.image = pygame.image.load(path.join(img_dir, "laserBlue07.png"))
         self.rect = self.image.get_rect()
         self.rect.centerx = posx
         self.rect.centery = posy
