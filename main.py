@@ -105,6 +105,7 @@ class Boss(pygame.sprite.Sprite):
         self.image=pygame.transform.rotate(self.image_origin,self.angle)
         self.rect=self.image.get_rect()
         self.rect.center=old_center
+        self.shield=100
 
     def update(self):
         self.rect.y += self.speedy
@@ -124,6 +125,7 @@ class Boss(pygame.sprite.Sprite):
         all_sprites.add(bullet)
         all_sprites.add(bullet2)
         all_sprites.add(bullet3)
+boss=Boss(WIDTH/2,0)
 def newMeteor():
     global all_sprites
     m = Meteor(meteors,all_sprites)
@@ -162,6 +164,11 @@ def draw_shield():
     shield_bar=pygame.rect.Rect(10,10,player.shield,10)
     outline=pygame.rect.Rect(10,10,100,10)
     pygame.draw.rect(screen,GREEN,shield_bar)
+    pygame.draw.rect(screen,(255,255,255),outline,2)
+def draw_shield_boss():
+    shield_bar=pygame.rect.Rect(10,50,boss.shield,10)
+    outline=pygame.rect.Rect(10,50,100,10)
+    pygame.draw.rect(screen,YELLOW,shield_bar)
     pygame.draw.rect(screen,(255,255,255),outline,2)
 def check_meteor_hit_player():
     global running, meteors
@@ -274,6 +281,15 @@ def check_bullets_boss_hit_player():
             player.shield-= 10
             
             # print("check_bullets_hit_meteor")
+def check_bullets_hit_boss():
+    global  score
+    hits = pygame.sprite.spritecollide(boss,bullets,False,pygame.sprite.collide_circle_ratio(1))
+    if hits:
+        for hit in hits:
+            hit.kill()
+            boss.shield-= 5
+            
+            # print("check_bullets_hit_meteor")
 def draw_score():
     font = pygame.font.Font(font_name, 14)
     text_surface = font.render(str(score), True, YELLOW)
@@ -307,6 +323,7 @@ def show_begin_screen():
     show_text("Press Space to begin.",320,400,20)
 begin_state=Begin_state(screen)
 show_boss=False
+boss_alive=False
 while running:
     # clocks control how fast the loop will execute
     clock.tick(FPS)
@@ -351,17 +368,24 @@ while running:
             player.shield=100
             live=3
             gamestate="begin"
-            boss.kill()
+            #boss.kill()
             begin_state.reset()
             
 
-        if score>500 and show_boss==False:
-            boss=Boss(WIDTH/2,0)
+        if score>100 and show_boss==False:
+            #boss=Boss(WIDTH/2,0)
             all_sprites.add(boss)
+            #draw_shield_boss()
             show_boss=True
+            boss_alive=True
         if score>400:
             bg=pygame.image.load(path.join(img_dir,'star_wars2.jpg'))
-
+        if boss.shield<=0:
+            boss.kill()
+            boss_alive=False
+        if boss.rect.y>HEIGHT:
+            boss.kill()
+            boss_alive=False
         elif score>200:
             bg=pygame.image.load(path.join(img_dir,'star_wars1.jpg'))
         # update the state of sprites
@@ -374,6 +398,7 @@ while running:
         check_bullets_hit_player()
         check_bullets_boss_hit_player()
 
+
         all_sprites.update()
 
         # draw on screen
@@ -383,6 +408,9 @@ while running:
         draw_score()
         draw_shield()
         draw_lives()
+        if boss_alive==True:
+            draw_shield_boss()
+            check_bullets_hit_boss()
         
         all_sprites.draw(screen)
         # flip to display
